@@ -1,0 +1,340 @@
+Visor Build Steps (Readable Checklist)
+=====================================
+
+1) Scope and Definitions
+------------------------
+1.1 Define the objective: compare advisor relevance vs LLMs, quant model, and S&P 500 on the same timeline.
+1.2 Fix the backtest window (start/end dates) and trading frequency (monthly or weekly).
+1.3 Choose the advisor proxy (e.g., AOR) and list supporting references you will cite.
+
+2) LLM Strategy Pipeline
+------------------------
+2.1 Select LLMs to include (GPT, Claude Sonnet, Gemini, optional Grok).
+2.2 Lock the prompt format and the allowed outputs (BUY / HOLD / SELL).
+2.3 Collect historical inputs per period (headlines, earnings summaries, macro events) with no future data.
+2.4 Run each LLM per period and store signals in per-model CSVs.
+2.5 Shift signals forward one period and apply them to SPY returns to generate each LLM series.
+
+3) Quant Model Strategy
+-----------------------
+3.1 Define quant rules (momentum/volatility/trend/mean reversion + your unique twist).
+3.2 Generate signals from historical price data and apply them next period.
+
+4) Performance Calculation
+--------------------------
+4.1 Compute returns for all strategies using identical assumptions and normalize to $1.
+4.2 Calculate metrics: cumulative return, annualized return, volatility, Sharpe, max drawdown.
+
+5) Visualization and Optional Hybrid
+------------------------------------
+5.1 Plot a single line chart with all curves (S&P 500, advisor, each LLM, quant model).
+5.2 If any LLM beats advisors, add the hybrid model and plot it as an extra curve.
+
+6) Reproducibility
+------------------
+6.1 Save prompts, outputs, parameters, and data sources so results are rerunnable.
+
+
+/////
+
+Perfect — this actually makes Visor much stronger and more defensible. Below is an extremely deep, precise, implementation-ready re-summary of your project with multiple LLMs, written as if it were the authoritative spec for the system. This is the version you could hand to Cursor, a judge, or an AP Research reader and say “this is exactly what I built.”
+
+Visor
+A Multi-Model Market Performance Evaluation System
+1. Core Objective (Re-stated Precisely)
+
+Visor is a quantitative research system designed to empirically test whether human financial advisors remain numerically relevant in the stock market when compared against:
+
+Multiple Large Language Models (LLMs)
+
+A custom quantitative trading model
+
+The S&P 500 benchmark
+
+All strategies are evaluated on the same historical timeline, using identical data, assumptions, metrics, and visualization methods.
+
+Visor does not attempt to forecast the market.
+It tests comparative performance and relevance.
+
+2. Strategies Included on the Final Graph (Exact)
+
+The final output graph always includes all of the following curves, plotted together:
+
+S&P 500 Benchmark
+
+Baseline market performance
+
+Advisor Performance Curve
+
+Real-world proxy for typical advisor-managed portfolios
+
+GPT Strategy Curve
+
+LLM-based trading decisions
+
+Claude (Sonnet) Strategy Curve
+
+Gemini Strategy Curve
+
+(Optional) Grok Strategy Curve
+
+Custom Quant Model Curve
+
+Mathematical strategy designed by the researcher
+
+Each curve represents the growth of $1 invested, plotted against time.
+
+3. Advisor Performance (How This Is Done Correctly)
+3.1 Why Real Advisor Portfolios Are Not Used
+
+Individual advisor client portfolios are private
+
+No public dataset provides daily return series for “average advisors”
+
+3.2 Advisor Proxy Definition
+
+Visor defines advisor performance using real, tradable, advisor-style allocation portfolios, justified by academic and industry research.
+
+Primary proxy:
+
+AOR (iShares Core Growth Allocation ETF)
+
+Represents diversified stock + bond portfolios commonly used by advisors
+
+Supporting justification:
+
+SPIVA Scorecard (active underperformance)
+
+Morningstar Active/Passive Barometer
+
+Cerulli research on advisor outcomes
+
+This creates a real-market, reproducible advisor curve that:
+
+Reflects how advisors actually invest
+
+Includes fees, diversification, and rebalancing
+
+4. LLM Strategy Pipeline (Multi-Model, Controlled)
+4.1 LLMs Included
+
+Visor evaluates multiple independent LLMs:
+
+GPT (OpenAI)
+
+Claude Sonnet (Anthropic)
+
+Gemini (Google)
+
+(Optional) Grok (xAI)
+
+Each LLM is treated as a separate strategy, not combined.
+
+4.2 Inputs to Each LLM
+
+For each time step (monthly or weekly):
+
+Historical news headlines
+
+Earnings summaries
+
+Macro events
+
+Market context only up to that date
+
+No future information is ever provided.
+
+4.3 Prompt Structure (Consistent Across Models)
+
+Each LLM receives the same prompt structure, for fairness:
+
+“Based only on the following information available as of [DATE], should an investor be invested in the S&P 500 for the next period?”
+
+Response options are constrained:
+
+BUY
+
+HOLD
+
+SELL
+
+4.4 Mapping LLM Output to Trades
+
+LLM text responses are converted to numeric signals:
+
+LLM Output	Position
+BUY	1 (long)
+HOLD	0 (cash)
+SELL	0 (cash)
+
+Signals are:
+
+Stored in CSV files
+
+Shifted forward by one period
+
+Applied to SPY returns
+
+Each LLM produces its own independent return series.
+
+5. Quantitative Model (Your Custom Twist)
+5.1 Model Philosophy
+
+Your quant model represents:
+
+Pure mathematics
+
+No human judgment
+
+No text interpretation
+
+Strict rule-based decision making
+
+5.2 Core Components
+
+Your model may combine:
+
+Momentum
+
+Volatility filtering
+
+Trend confirmation
+
+Mean reversion signals
+
+Your “twist”:
+
+A unique rule or weighting method that differentiates it from textbook strategies
+
+5.3 Execution Rules
+
+Signals generated from historical price data
+
+Trades executed next period
+
+Long or cash only
+
+No look-ahead bias
+
+This produces a pure quant curve.
+
+6. Timeline and Data Alignment
+6.1 Timeline
+
+Fixed start and end date (e.g. 2020–present)
+
+Identical for:
+
+Advisors
+
+All LLMs
+
+Quant model
+
+S&P 500
+
+6.2 Normalization
+
+All strategies start with $1
+
+Returns computed identically
+
+Same trading calendar
+
+7. Metrics Computed for Every Strategy
+
+For every curve, Visor computes:
+
+Cumulative Return
+
+Annualized Return
+
+Volatility
+
+Sharpe Ratio
+
+Maximum Drawdown
+
+These metrics allow comparison of:
+
+Raw performance
+
+Risk-adjusted performance
+
+Downside risk
+
+8. Visualization (Final Output)
+8.1 Primary Graph
+
+A single line chart displaying:
+
+S&P 500
+
+Advisor Proxy
+
+GPT
+
+Claude Sonnet
+
+Gemini
+
+Quant Model
+
+This graph is the core evidence of the study.
+
+8.2 Interpretation Framework
+
+Best curve = highest cumulative return
+
+Best Sharpe = best risk-adjusted model
+
+Advisor relevance judged relative to:
+
+LLMs
+
+Quant model
+
+Market benchmark
+
+9. Hybrid Model (Conditional Extension)
+
+If:
+
+One or more LLMs outperform advisors
+
+Then:
+
+Combine advisor allocation with LLM timing
+
+Backtest hybrid strategy
+
+Plot as an additional curve
+
+This tests:
+
+Are advisors obsolete — or just incomplete without AI?
+
+10. Reproducibility & Scientific Rigor
+
+Visor enforces:
+
+Identical prompts across LLMs
+
+Saved outputs
+
+Fixed parameters
+
+Transparent code
+
+Public data sources
+
+Any researcher could rerun the system and obtain the same results.
+
+11. What Visor Ultimately Answers
+
+Visor provides a numerical, visual, and statistical answer to:
+
+Do financial advisors still have a future in a world where AI and quantitative models can independently make market decisions?
+
+Not by opinion —
+by evidence.

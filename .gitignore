@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+outputs/
+data/llm_signals/*.csv
+data/prices*.csv
+data/advisor*.csv
+.mpl_cache/
