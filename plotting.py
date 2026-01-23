@@ -81,3 +81,42 @@ def plot_series(
         plt.savefig(path, dpi=200)
     if show:
         plt.show()
+
+
+def plot_series_interactive(
+    series: pd.DataFrame,
+    output_dir: Optional[str],
+    open_browser: bool = False,
+) -> Optional[str]:
+    try:
+        import plotly.graph_objects as go
+    except ImportError as exc:
+        raise SystemExit(
+            "plotly is required for interactive charts. Install with: pip install plotly"
+        ) from exc
+
+    fig = go.Figure()
+    for col in series.columns:
+        fig.add_trace(go.Scatter(x=series.index, y=series[col], mode="lines", name=col))
+    fig.update_layout(
+        title="Visor Strategy Comparison (Interactive)",
+        xaxis_title="Date",
+        yaxis_title="Growth of $1",
+        hovermode="x unified",
+    )
+
+    if output_dir:
+        path = os.path.join(output_dir, "visor_chart_interactive.html")
+    else:
+        tmp_dir = os.path.join(os.getcwd(), ".tmp")
+        os.makedirs(tmp_dir, exist_ok=True)
+        path = os.path.join(tmp_dir, "visor_chart_interactive.html")
+
+    fig.write_html(path, include_plotlyjs="cdn")
+
+    if open_browser:
+        import webbrowser
+
+        webbrowser.open(f"file://{path}")
+
+    return path

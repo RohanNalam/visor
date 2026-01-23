@@ -10,7 +10,7 @@ def main() -> None:
     )
     parser.add_argument("--start", default="2020-01-01")
     parser.add_argument("--end", default="2024-12-31")
-    parser.add_argument("--frequency", default="M", choices=["M", "W"])
+    parser.add_argument("--frequency", default="D", choices=["D", "W", "M"])
     parser.add_argument("--advisor-fee-annual", default="0.01")
     args = parser.parse_args()
 
@@ -29,8 +29,9 @@ def main() -> None:
         args.end,
         "--advisor-fee-annual",
         args.advisor_fee_annual,
-        "--show-plot",
         "--no-save-outputs",
+        "--interactive-html",
+        "--open-html",
     ]
 
     if not os.path.exists("data/prices.csv"):

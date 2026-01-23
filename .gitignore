@@ -8,3 +8,4 @@ data/prices*.csv
 data/advisor*.csv
 .mpl_cache/
 data/llm_forecasts/*.csv
+.tmp/

@@ -14,8 +14,13 @@ from data import (
 )
 from llm import align_signals_to_returns, load_llm_signals
 from metrics import performance_metrics
-from plotting import plot_advisor_series, plot_metrics_bars, plot_series
-from quant import compute_strategy_series, quant_model_signals
+from plotting import (
+    plot_advisor_series,
+    plot_metrics_bars,
+    plot_series,
+    plot_series_interactive,
+)
+from quant import compute_strategy_series, quant_model_name, quant_model_signals
 
 def save_outputs(
     config: VisorConfig,
@@ -90,6 +95,11 @@ def main() -> None:
     else:
         advisor_returns = returns[config.advisor_ticker].reindex(spy_returns.index)
     advisor_returns = advisor_returns.dropna()
+    if spy_returns.empty or advisor_returns.empty:
+        raise ValueError(
+            "No return data in выбранный period. "
+            "Check your date range, frequency, and prices CSV."
+        )
     advisor_returns = apply_annual_fee(
         advisor_returns, config.advisor_fee_annual, config.frequency
     )
@@ -100,13 +110,14 @@ def main() -> None:
         aligned_signal = align_signals_to_returns(signal, spy_returns.index)
         llm_series[model] = compute_strategy_series(spy_returns, aligned_signal)
 
-    quant_signal = quant_model_signals(spy_returns)
+    quant_signal = quant_model_signals(spy_returns, config.quant_model)
     quant_series = compute_strategy_series(spy_returns, quant_signal)
+    quant_label = f"Quant Model ({quant_model_name(config.quant_model)})"
 
     base_series = {
         "S&P 500": compute_strategy_series(spy_returns, None),
         "Advisor": compute_strategy_series(advisor_returns, None),
-        "Quant Model": quant_series,
+        quant_label: quant_series,
     }
     series_df = pd.DataFrame({**base_series, **llm_series}).dropna(how="all")
 
@@ -119,7 +130,7 @@ def main() -> None:
     hybrid_signal = None
     hybrid_label = None
     if best_excess > 0 and best_strategy != "Advisor":
-        if best_strategy == "Quant Model":
+        if best_strategy == quant_label:
             hybrid_signal = quant_signal.reindex(advisor_returns.index).fillna(0.0)
             hybrid_label = "Hybrid (Advisor + Quant)"
         elif best_strategy in llm_series:
@@ -138,7 +149,7 @@ def main() -> None:
             returns_series = advisor_returns.reindex(series_df.index).dropna()
         elif col == "S&P 500":
             returns_series = spy_returns.reindex(series_df.index).dropna()
-        elif col == "Quant Model":
+        elif col == quant_label:
             returns_series = spy_returns.reindex(series_df.index).dropna() * quant_signal
         elif col == "Hybrid (Advisor + LLM)":
             returns_series = (
@@ -171,6 +182,12 @@ def main() -> None:
     plot_series(series_df, output_dir, show=config.show_plot)
     plot_advisor_series(series_df["Advisor"], output_dir)
     plot_metrics_bars(metrics_df, output_dir)
+    if config.interactive_html:
+        plot_series_interactive(
+            series_df,
+            output_dir,
+            open_browser=config.open_html,
+        )
 
     if output_dir:
         print(f"Saved outputs to {output_dir}")

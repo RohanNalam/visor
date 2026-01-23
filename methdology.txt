@@ -1,0 +1,168 @@
+Research Question: Do financial/investment advisors have a future when it comes to numerically beating the S&P 500 against LLMs?
+
+Hypothesis: Advisors do not consistently outperform the market. I think AI and math models will improve performance. If AI significantly improves advisor returns, then advisors stay relevant. If AI alone beats advisors, the value of advisors drops.
+
+This project’s methodology fits the research question because it answers the question of whether advisors have a future or not by the final price vs time graph.
+
+No surveys, questionnaires, or consent forms are needed because this research project uses no human participants, and it is all to do with datasets.
+
+
+
+
+Research Design
+This study is a comparative research method where the goal is to see where advisors in the stock market can gain positive returns over the S&P 500.
+This study should compare financial advisor stats to large language models and quantitative math models over the same time period.
+The final goal should be to see a graph and make conclusions about financial advisors with the upcoming use of LLMs and new quantitative models.
+If the results prove advisors are worse than LLMs, then the LLM's gains will be added to the advisor's gains to see the final graph of the combination.
+All measurements should be compared under a money vs time graph.
+This research should also use the same historical timeline in order ot make sure it is on the same grounds.
+Must control outside variables or include them in the project.
+All models made will be backtested using the same historical market data to evaluate performance.
+Data Collection: There are TWO different types of data being collected.
+Financial advisor performance data
+To find how well advisors perform in the market, this research will use open-source data to find the gains or losses on the S&P 500. 
+SPIVA scorecard 
+Active vs Passive performance data from Morningstar
+Cerulli Advisor returns
+ANY published relevant data from large advisory firms, such as Wells Fargo
+These sources need to provide advisor performance data, including whether they underperform or overperform the stock market. 
+No personal or private advisor details are getting leaked, so there are no problems with privacy or security.y
+S&P 500 Market Data
+This research gets its S&P 500 market data from Yahoo Finance API and Python’s finance package.
+Data needed from these things:
+Daily or monthly closing prices
+Total return index preferred
+Dividends
+These things act as the benchmark to compare with the advisor data
+LLM & Quant Model Performance Data
+Train an LLM model by using historical news and ask it to make buy/sell decisions at specific intervals.
+Procedure:
+1. Provide the LLM with news during the time period, with news headlines or earnings from specific data in history.
+2. Ask it whether the market will go up or down and get a graph.
+3. Convert responses into trading decisions
+Do it for multiple LLMs like ChatGPT, Gemini, and Grok.
+Mathematical Quant Model
+Some simple models:
+1. Moving average crossover
+2. Relative strength index strategy
+3. Momentum model
+4. Mean reversion model
+Anything to show the volatility spread.
+Experimental Procedure
+Timeline
+2020-Present
+Timeline must be the same for advisors, LLM model, and quant model
+Collect and normalize data
+Get data from SPIVA, Morningstar, and Cerulli
+Normalize value to annual return, cumulative return, and drawdown.
+This should become the advisor performance curve
+Create LLM model
+Gather historical data from the timeline(1990-2024).
+Give LLM prompts like “Based on the following news from June 7, 1967, would an investor buy and hold the S&P 500? [And prompt the LLM the same for each month between the years.]”
+Convert qualitative predictions to quantitative trades and the money the LLM would make over the time period
+Generate a graph for total returns
+This becomes the LLM performance curve.
+Build and test the Quant model
+Pull historical S&P 500 data
+Apply mathematical rules 
+Execute buy/sell signals algorithmically 
+Graph results and calculate metrics
+This is the Quant curve
+Compare all curves (One advisor, One Quant model, Multiple LLMs)
+S&P 500 Benchmark 
+Advisor Performance 
+LLM 
+Quant Model 
+Things being graphed: 
+Cumulative return 
+Annual returns MAIN PART 
+Volatility
+Data Analysis Plan
+Cumulative Return (total growth of the portfolio) 
+Annualized Return (average yearly growth) 
+Maximum Drawdown (largest loss from a peak) 
+Volatility (standard deviation of returns) 
+Sharpe Ratio (risk-adjusted return)
+How each metric is calculated
+Daily returns are calculated by taking the percent change between consecutive days.
+The annualized return formula: annual return = ((End value/Start value)^(1/years)) - 1
+Volatility calculation: calculate daily returns, take the standard deviation of that, and annualize that by multiplying that by the square root of 252(number of trading days)
+Sharpe ratio calculation: (Portfolio return - Risk-Free rate)/volatility
+How are these calculations going to be interpreted?
+The highest cumulative returns are the best overall
+The highest Sharpe ratio shows the best risk-adjusted return
+The lowest max drawdown shows the safest model
+The advisors will be evaluated based on their normalized annual returns over the same time period, which is 2020-present.
+If the LLM outperforms the returns and the Sharpe ratio, we can conclude that the LLM may be more reliable.
+If the advisor and AI model perform12was3 best, advisors may remain useful when using LLMs
+Comparing is the right method because this is the only way to determine if advisors still have a future, because if this research compares the results of advisors vs LLM, then it will be clear which one will be relevant in the future when it comes to advising.
+Combine model(IF NEEDED)
+If the LLM or quant model manages to beat the advisor in profits, then a new model will be created.
+The best model will be combined with advisor returns to see if the new model with advisor returns will be able to perform at a much higher level than everything else and perform well above the market.
+Materials needed
+Python
+Libraries: yfinance, pandas, matplotlib, numpy
+LLMs for models
+Excel to organize advisor data
+Graphing library
+Data inputs
+SPIVA advisor returns
+Yahoo Finance S&P 500 data
+Historical news headlines only for LLM
+Code for all models
+Outputs needed
+Line graph with all 4 strategies on the graph of the S&P 500
+Risk and return metrics
+Prompts used for LLMs
+Code documentation for the quant model(just the GitHub repository)
+Order of events/Timeline
+Week 1-2: Gather S&P 500 data, advisor data, and past news to train the LLM
+Week 3-4: Build a quant model
+Week 4-5: Construct multiple LLM models for ChatGPT, Sonnet, Grok, and Gemini
+Week 6: Run backtests and create graphs 
+Week 7: Compare and combine if needed
+Week 8: Analyze results
+Feasibility
+This project is very feasible as everything is free and public, and nothing is extremely hard to get.
+The mathematical model uses basic quantitative techniques.
+ALL public, nothing private.
+Equation sheet for the quantitative model
+Equations for returns and growth for quantitative model
+Daily return formula - runs performance regardless of price level
+rt=(Pt-Pt-t)/Pt-1
+Rt - return on day t
+Pt - price of the asset on day t
+Pt - price of the asset on the previous day before t
+Cumulative return - this is the equation graphed against the S&P 500
+CR = t=tT(1+rt)-1
+CR: cumulative return 
+rt ​: return at time t
+T: total number of trading days 
+Annualized return - used to compare strategies over time
+Rannual = (1+CR)252/t - 1
+Rannual​- annualized return
+CR- cumulative return
+T- number of trading days
+252- average number of trading days per year
+Volatility - measures how much returns fluctuate
+σ = 11-T t=1T(rt-r)2
+σ - volatility
+rt - daily return 
+r - mean daily return 
+T - number of observations
+Sharpe Ratio -  Better return per unit of risk
+S = Rannual-  Rfσ annual
+S- Sharpe ratio
+Rannual​- annualized return
+Rf​- risk-free rate
+σannual- annualized volatilitt
+Maximum drawdown - Measures worst loss from peak to bottom and shows the quantity of crashes and how bad it was
+Max Drawdown = maxt * (Peakt- TroughtTrought)
+Peakt​- highest portfolio value before drop
+Trought- lowest value after the highest
+Portfolio return - preventing look-ahead bias which means a data analysis error where a model in this case this research’s quantitative model uses future information which unavailable at the time of decision-making.
+rtportfolio = Signalt-1 * rt
+Signalt−1: trading decision from previous day
+rt: asset return
+
+*****Note for me: once finished with code add snippets here to explain certain methods******

@@ -20,6 +20,9 @@ class VisorConfig:
     advisor_fee_annual: float
     show_plot: bool
     no_save_outputs: bool
+    quant_model: str
+    interactive_html: bool
+    open_html: bool
     risk_free_annual: float
 
 
@@ -27,7 +30,7 @@ def parse_args() -> VisorConfig:
     parser = argparse.ArgumentParser(description="Visor backtest runner")
     parser.add_argument("--start", default="2020-01-01")
     parser.add_argument("--end", default=datetime.today().strftime("%Y-%m-%d"))
-    parser.add_argument("--frequency", default="M", choices=["M", "W"])
+    parser.add_argument("--frequency", default="M", choices=["D", "W", "M"])
     parser.add_argument("--advisor-ticker", default="AOR")
     parser.add_argument(
         "--advisor-data-csv",
@@ -60,6 +63,21 @@ def parse_args() -> VisorConfig:
         action="store_true",
         help="Do not write files to outputs/, only show plot/console",
     )
+    parser.add_argument(
+        "--quant-model",
+        default="trend_momentum_rsi_vol",
+        choices=["trend_momentum_rsi_vol", "sma_crossover", "vol_adjusted_momentum"],
+    )
+    parser.add_argument(
+        "--interactive-html",
+        action="store_true",
+        help="Create an interactive HTML chart (pan/zoom)",
+    )
+    parser.add_argument(
+        "--open-html",
+        action="store_true",
+        help="Open the interactive chart in the browser",
+    )
     args = parser.parse_args()
     return VisorConfig(
         start=args.start,
@@ -76,5 +94,8 @@ def parse_args() -> VisorConfig:
         advisor_fee_annual=args.advisor_fee_annual,
         show_plot=args.show_plot,
         no_save_outputs=args.no_save_outputs,
+        quant_model=args.quant_model,
+        interactive_html=args.interactive_html,
+        open_html=args.open_html,
         risk_free_annual=args.risk_free_annual,
     )

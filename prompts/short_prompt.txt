@@ -1,0 +1,7 @@
+Based only on the information available as of [DATE], should an investor be
+invested in the S&P 500 for the NEXT period ([FREQUENCY])?
+
+Output exactly one word: BUY, HOLD, or SELL.
+
+Information:
+[PASTE INFO]

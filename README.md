@@ -32,3 +32,25 @@ python scripts/llm_output_to_csv.py --model gpt --date 2025-02-01 --signal BUY
 ```bash
 python scripts/run_popup.py --start 2020-01-01 --end 2024-12-31
 ```
+
+## Helpers
+Merge Yahoo Finance CSVs into `data/prices.csv`:
+```bash
+python scripts/merge_yahoo_csv.py --spy ~/Downloads/SPY.csv --advisor ~/Downloads/AOR.csv
+```
+
+Validate data files:
+```bash
+python scripts/validate_data.py --prices data/prices.csv --advisor data/advisor_returns.csv
+python scripts/validate_llm_signals.py --dir data/llm_signals --start 2020-01-01 --end 2024-12-31
+```
+
+Generate date-based LLM prompts:
+```bash
+python scripts/generate_llm_prompts.py --start 2020-01-01 --end 2024-12-31 --frequency M
+```
+
+Interactive chart (pan/zoom):
+```bash
+python main.py --prices-csv data/prices.csv --interactive-html --open-html
+```

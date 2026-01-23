@@ -23,5 +23,12 @@ One CSV per model with:
 - `date` (YYYY-MM-DD)
 - `signal` (BUY, HOLD, SELL)
 
+Recommended model files:
+- `gpt.csv`
+- `claude_sonnet.csv`
+- `gemini.csv`
+- `grok.csv`
+- `deepseek.csv`
+
 ## Templates
 See `data/templates/` for sample formats.
