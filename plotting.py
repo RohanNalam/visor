@@ -50,7 +50,7 @@ def plot_metrics_bars(metrics: pd.DataFrame, output_dir: str) -> None:
         plt.savefig(path, dpi=200)
 
 
-def plot_series(series: pd.DataFrame, output_dir: str) -> None:
+def plot_series(series: pd.DataFrame, output_dir: str, show: bool = False) -> None:
     plt.figure(figsize=(12, 6))
     for col in series.columns:
         plt.plot(series.index, series[col], label=col)
@@ -62,3 +62,5 @@ def plot_series(series: pd.DataFrame, output_dir: str) -> None:
     plt.tight_layout()
     path = os.path.join(output_dir, "visor_chart.png")
     plt.savefig(path, dpi=200)
+    if show:
+        plt.show()

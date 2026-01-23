@@ -17,6 +17,13 @@ python main.py --use-synthetic-data --frequency M
 - `plotting.py` output chart.
 - `data/` input data and templates.
 - `prompts/` saved LLM prompt templates and outputs.
+- `scripts/` helper utilities for LLM outputs.
 
 ## Data Inputs
 See `data/README.md` for CSV schemas and examples.
+
+## LLM Signal Helper
+Append a single LLM signal to a CSV:
+```bash
+python scripts/llm_output_to_csv.py --model gpt --date 2025-02-01 --signal BUY
+```

@@ -33,6 +33,33 @@ def save_outputs(
     return out_dir
 
 
+def write_winner_summary(
+    output_dir: str,
+    best_strategy: str,
+    best_excess: float,
+    excess_over_sp: pd.Series,
+) -> None:
+    path = os.path.join(output_dir, "winner_summary.txt")
+    lines = [
+        "Visor Winner Summary",
+        "======================",
+        f"Best strategy vs S&P 500: {best_strategy}",
+        f"Excess over S&P 500: {best_excess:.4f}",
+        "",
+        "Excess over S&P 500 by strategy:",
+    ]
+    for name, value in excess_over_sp.sort_values(ascending=False).items():
+        lines.append(f"- {name}: {value:.4f}")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+
+
+def apply_annual_fee(returns: pd.Series, fee_annual: float, frequency: str) -> pd.Series:
+    periods_per_year = 12 if frequency == "M" else 52
+    fee_period = (1 + fee_annual) ** (1 / periods_per_year) - 1
+    return returns - fee_period
+
+
 def main() -> None:
     config = parse_args()
     os.makedirs(config.output_dir, exist_ok=True)
@@ -63,6 +90,9 @@ def main() -> None:
     else:
         advisor_returns = returns[config.advisor_ticker].reindex(spy_returns.index)
     advisor_returns = advisor_returns.dropna()
+    advisor_returns = apply_annual_fee(
+        advisor_returns, config.advisor_fee_annual, config.frequency
+    )
 
     llm_signals = load_llm_signals(config.llm_signals_dir, config.frequency)
     llm_series = {}
@@ -80,19 +110,25 @@ def main() -> None:
     }
     series_df = pd.DataFrame({**base_series, **llm_series}).dropna(how="all")
 
+    sp500_final = series_df["S&P 500"].iloc[-1]
+    final_values = series_df.iloc[-1]
+    excess_over_sp = (final_values - sp500_final).drop("S&P 500")
+    best_strategy = excess_over_sp.idxmax()
+    best_excess = excess_over_sp.loc[best_strategy]
+
     hybrid_signal = None
     hybrid_label = None
-    best_strategy = series_df.iloc[-1].sort_values(ascending=False).index[0]
-    if best_strategy == "Quant Model":
-        hybrid_signal = quant_signal.reindex(advisor_returns.index).fillna(0.0)
-        hybrid_label = "Hybrid (Advisor + Quant)"
-    elif best_strategy in llm_series:
-        hybrid_signal = align_signals_to_returns(
-            llm_signals[best_strategy], advisor_returns.index
-        )
-        hybrid_label = "Hybrid (Advisor + LLM)"
+    if best_excess > 0 and best_strategy != "Advisor":
+        if best_strategy == "Quant Model":
+            hybrid_signal = quant_signal.reindex(advisor_returns.index).fillna(0.0)
+            hybrid_label = "Hybrid (Advisor + Quant)"
+        elif best_strategy in llm_series:
+            hybrid_signal = align_signals_to_returns(
+                llm_signals[best_strategy], advisor_returns.index
+            )
+            hybrid_label = "Hybrid (Advisor + LLM)"
 
-    if hybrid_signal is not None and hybrid_label is not None:
+    if hybrid_signal is not None:
         hybrid_series = compute_strategy_series(advisor_returns, hybrid_signal)
         series_df[hybrid_label] = hybrid_series
 
@@ -105,9 +141,13 @@ def main() -> None:
         elif col == "Quant Model":
             returns_series = spy_returns.reindex(series_df.index).dropna() * quant_signal
         elif col == "Hybrid (Advisor + LLM)":
-            returns_series = advisor_returns.reindex(series_df.index).dropna() * hybrid_signal
+            returns_series = (
+                advisor_returns.reindex(series_df.index).dropna() * hybrid_signal
+            )
         elif col == "Hybrid (Advisor + Quant)":
-            returns_series = advisor_returns.reindex(series_df.index).dropna() * hybrid_signal
+            returns_series = (
+                advisor_returns.reindex(series_df.index).dropna() * hybrid_signal
+            )
         else:
             signal = align_signals_to_returns(llm_signals[col], spy_returns.index)
             returns_series = spy_returns.reindex(series_df.index).dropna() * signal
@@ -118,8 +158,11 @@ def main() -> None:
         )
 
     metrics_df = pd.DataFrame(metric_rows).T
+    final_values = series_df.iloc[-1]
+    metrics_df["excess_over_sp500"] = final_values - final_values["S&P 500"]
     output_dir = save_outputs(config, series_df, metrics_df)
-    plot_series(series_df, output_dir)
+    write_winner_summary(output_dir, best_strategy, float(best_excess), excess_over_sp)
+    plot_series(series_df, output_dir, show=config.show_plot)
     plot_advisor_series(series_df["Advisor"], output_dir)
     plot_metrics_bars(metrics_df, output_dir)
 

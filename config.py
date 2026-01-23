@@ -17,6 +17,8 @@ class VisorConfig:
     prices_csv: Optional[str]
     prices_date_column: str
     use_synthetic_data: bool
+    advisor_fee_annual: float
+    show_plot: bool
     risk_free_annual: float
 
 
@@ -46,6 +48,12 @@ def parse_args() -> VisorConfig:
         help="Generate synthetic price data instead of fetching",
     )
     parser.add_argument("--risk-free-annual", type=float, default=0.02)
+    parser.add_argument("--advisor-fee-annual", type=float, default=0.01)
+    parser.add_argument(
+        "--show-plot",
+        action="store_true",
+        help="Show the main chart in a popup window",
+    )
     args = parser.parse_args()
     return VisorConfig(
         start=args.start,
@@ -59,5 +67,7 @@ def parse_args() -> VisorConfig:
         prices_csv=args.prices_csv,
         prices_date_column=args.prices_date_column,
         use_synthetic_data=args.use_synthetic_data,
+        advisor_fee_annual=args.advisor_fee_annual,
+        show_plot=args.show_plot,
         risk_free_annual=args.risk_free_annual,
     )
