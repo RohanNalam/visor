@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import pandas as pd
 
@@ -9,11 +10,20 @@ if "MPLCONFIGDIR" not in os.environ:
 
 import matplotlib
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+
+def _get_pyplot(show: bool):
+    backend = "MacOSX" if show else "Agg"
+    try:
+        matplotlib.use(backend, force=True)
+    except Exception:
+        matplotlib.use("Agg", force=True)
+    import matplotlib.pyplot as plt
+
+    return plt
 
 
-def plot_advisor_series(advisor_series: pd.Series, output_dir: str) -> None:
+def plot_advisor_series(advisor_series: pd.Series, output_dir: Optional[str]) -> None:
+    plt = _get_pyplot(show=False)
     plt.figure(figsize=(10, 5))
     plt.plot(advisor_series.index, advisor_series.values, label="Advisor")
     plt.title("Advisor Performance Curve")
@@ -22,11 +32,13 @@ def plot_advisor_series(advisor_series: pd.Series, output_dir: str) -> None:
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    path = os.path.join(output_dir, "advisor_curve.png")
-    plt.savefig(path, dpi=200)
+    if output_dir:
+        path = os.path.join(output_dir, "advisor_curve.png")
+        plt.savefig(path, dpi=200)
 
 
-def plot_metrics_bars(metrics: pd.DataFrame, output_dir: str) -> None:
+def plot_metrics_bars(metrics: pd.DataFrame, output_dir: Optional[str]) -> None:
+    plt = _get_pyplot(show=False)
     metric_cols = [
         "cumulative_return",
         "annualized_return",
@@ -46,11 +58,15 @@ def plot_metrics_bars(metrics: pd.DataFrame, output_dir: str) -> None:
         plt.ylabel(col.replace("_", " ").title())
         plt.xticks(rotation=30, ha="right")
         plt.tight_layout()
-        path = os.path.join(output_dir, f"{col}_bar.png")
-        plt.savefig(path, dpi=200)
+        if output_dir:
+            path = os.path.join(output_dir, f"{col}_bar.png")
+            plt.savefig(path, dpi=200)
 
 
-def plot_series(series: pd.DataFrame, output_dir: str, show: bool = False) -> None:
+def plot_series(
+    series: pd.DataFrame, output_dir: Optional[str], show: bool = False
+) -> None:
+    plt = _get_pyplot(show=show)
     plt.figure(figsize=(12, 6))
     for col in series.columns:
         plt.plot(series.index, series[col], label=col)
@@ -60,7 +76,8 @@ def plot_series(series: pd.DataFrame, output_dir: str, show: bool = False) -> No
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    path = os.path.join(output_dir, "visor_chart.png")
-    plt.savefig(path, dpi=200)
+    if output_dir:
+        path = os.path.join(output_dir, "visor_chart.png")
+        plt.savefig(path, dpi=200)
     if show:
         plt.show()

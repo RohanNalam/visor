@@ -27,3 +27,8 @@ Append a single LLM signal to a CSV:
 ```bash
 python scripts/llm_output_to_csv.py --model gpt --date 2025-02-01 --signal BUY
 ```
+
+## Quick Popup Run
+```bash
+python scripts/run_popup.py --start 2020-01-01 --end 2024-12-31
+```

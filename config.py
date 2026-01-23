@@ -19,6 +19,7 @@ class VisorConfig:
     use_synthetic_data: bool
     advisor_fee_annual: float
     show_plot: bool
+    no_save_outputs: bool
     risk_free_annual: float
 
 
@@ -54,6 +55,11 @@ def parse_args() -> VisorConfig:
         action="store_true",
         help="Show the main chart in a popup window",
     )
+    parser.add_argument(
+        "--no-save-outputs",
+        action="store_true",
+        help="Do not write files to outputs/, only show plot/console",
+    )
     args = parser.parse_args()
     return VisorConfig(
         start=args.start,
@@ -69,5 +75,6 @@ def parse_args() -> VisorConfig:
         use_synthetic_data=args.use_synthetic_data,
         advisor_fee_annual=args.advisor_fee_annual,
         show_plot=args.show_plot,
+        no_save_outputs=args.no_save_outputs,
         risk_free_annual=args.risk_free_annual,
     )

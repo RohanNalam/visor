@@ -160,13 +160,25 @@ def main() -> None:
     metrics_df = pd.DataFrame(metric_rows).T
     final_values = series_df.iloc[-1]
     metrics_df["excess_over_sp500"] = final_values - final_values["S&P 500"]
-    output_dir = save_outputs(config, series_df, metrics_df)
-    write_winner_summary(output_dir, best_strategy, float(best_excess), excess_over_sp)
+
+    output_dir = None
+    if not config.no_save_outputs:
+        output_dir = save_outputs(config, series_df, metrics_df)
+        write_winner_summary(
+            output_dir, best_strategy, float(best_excess), excess_over_sp
+        )
+
     plot_series(series_df, output_dir, show=config.show_plot)
     plot_advisor_series(series_df["Advisor"], output_dir)
     plot_metrics_bars(metrics_df, output_dir)
 
-    print(f"Saved outputs to {output_dir}")
+    if output_dir:
+        print(f"Saved outputs to {output_dir}")
+    else:
+        print(
+            f"Winner vs S&P 500: {best_strategy} "
+            f"(excess {float(best_excess):.4f})"
+        )
 
 
 if __name__ == "__main__":
