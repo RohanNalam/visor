@@ -3,15 +3,24 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-try:
-    import yfinance as yf
-except ImportError as exc:  # pragma: no cover
-    raise SystemExit(
-        "yfinance is required. Install with: pip install yfinance pandas numpy matplotlib"
-    ) from exc
+
+def _resample_freq(frequency: str) -> str:
+    """Map user-facing frequency codes to pandas 3.x resample aliases."""
+    return {"M": "ME", "W": "W", "D": "D"}.get(frequency, frequency)
+
+
+def _require_yfinance():  # pragma: no cover - only used for live price paths
+    try:
+        import yfinance as yf
+    except ImportError as exc:
+        raise SystemExit(
+            "yfinance is required. Install with: pip install yfinance pandas numpy matplotlib"
+        ) from exc
+    return yf
 
 
 def download_prices(tickers: List[str], start: str, end: str) -> pd.DataFrame:
+    yf = _require_yfinance()
     data = yf.download(
         tickers=tickers,
         start=start,
@@ -26,6 +35,41 @@ def download_prices(tickers: List[str], start: str, end: str) -> pd.DataFrame:
     else:
         data = data.rename(columns={"Close": tickers[0]})
     return data.dropna(how="all")
+
+
+def _normalize_datetime_index(data: pd.DataFrame) -> pd.DataFrame:
+    if getattr(data.index, "tz", None) is not None:
+        data = data.copy()
+        data.index = data.index.tz_localize(None)
+    return data
+
+
+def fetch_latest_prices(tickers: List[str]) -> pd.DataFrame:
+    yf = _require_yfinance()
+    data = yf.download(
+        tickers=tickers,
+        period="1d",
+        interval="1m",
+        auto_adjust=True,
+        progress=False,
+    )
+    if data.empty:
+        raise ValueError("No intraday data returned. Check tickers.")
+    if isinstance(data.columns, pd.MultiIndex):
+        data = data["Close"]
+    else:
+        data = data.rename(columns={"Close": tickers[0]})
+    data = _normalize_datetime_index(data)
+    latest = data.tail(1).dropna(how="all")
+    if latest.empty:
+        raise ValueError("Latest intraday price is empty.")
+    return latest
+
+
+def append_latest_prices(prices: pd.DataFrame, latest: pd.DataFrame) -> pd.DataFrame:
+    prices = _normalize_datetime_index(prices)
+    combined = pd.concat([prices, latest]).sort_index()
+    return combined[~combined.index.duplicated(keep="last")]
 
 
 def load_prices_csv(
@@ -63,8 +107,8 @@ def generate_synthetic_prices(
 
 
 def to_period_returns(prices: pd.DataFrame, frequency: str) -> pd.DataFrame:
-    period_prices = prices.resample(frequency).last()
-    returns = period_prices.pct_change().dropna(how="all")
+    period_prices = prices.resample(_resample_freq(frequency)).last()
+    returns = period_prices.pct_change(fill_method=None).dropna(how="all")
     return returns
 
 
@@ -85,7 +129,7 @@ def load_advisor_returns(
         returns = pd.Series(df["return"].astype(float).values, index=df["date"])
         period_returns = (
             (1 + returns)
-            .resample(frequency)
+            .resample(_resample_freq(frequency))
             .prod()
             .sub(1)
             .dropna()
@@ -93,5 +137,5 @@ def load_advisor_returns(
         return period_returns
 
     values = pd.Series(df["value"].astype(float).values, index=df["date"])
-    period_values = values.resample(frequency).last().dropna()
+    period_values = values.resample(_resample_freq(frequency)).last().dropna()
     return period_values.pct_change().dropna()

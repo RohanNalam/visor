@@ -1,7 +1,8 @@
 Based only on the information available as of [DATE], should an investor be
 invested in the S&P 500 for the NEXT period ([FREQUENCY])?
+You may use all information from prior periods up to [DATE].
 
 Output exactly one word: BUY, HOLD, or SELL.
 
-Information:
+Information (include all prior periods up to [DATE]):
 [PASTE INFO]

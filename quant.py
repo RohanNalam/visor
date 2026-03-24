@@ -23,7 +23,9 @@ def _trend_momentum_rsi_vol(returns: pd.Series) -> pd.Series:
     vol_ok = volatility < volatility.rolling(12).median()
     rsi_ok = rsi < 70
 
-    signal = trend_up & momentum_up & vol_ok & rsi_ok
+    # Invest if at least 2 of 4 conditions are true (more aggressive than requiring all 4)
+    conditions_met = trend_up.astype(int) + momentum_up.astype(int) + vol_ok.astype(int) + rsi_ok.astype(int)
+    signal = conditions_met >= 2
     return signal.astype(float).fillna(0.0)
 
 
@@ -64,7 +66,8 @@ def quant_model_name(model_key: str) -> str:
 def quant_model_signals(returns: pd.Series, model: str) -> pd.Series:
     if model not in QUANT_MODELS:
         raise ValueError(f"Unknown quant model: {model}")
-    return QUANT_MODELS[model](returns)
+    signals = QUANT_MODELS[model](returns)
+    return signals.shift(1).fillna(0.0)
 
 
 def compute_strategy_series(

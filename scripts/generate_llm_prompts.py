@@ -16,7 +16,8 @@ def main() -> None:
 
     start = pd.to_datetime(args.start)
     end = pd.to_datetime(args.end)
-    dates = pd.date_range(start=start, end=end, freq=args.frequency)
+    freq_map = {"M": "ME", "W": "W", "D": "D"}
+    dates = pd.date_range(start=start, end=end, freq=freq_map.get(args.frequency, args.frequency))
     if dates.empty:
         raise ValueError("No dates generated for the given range.")
 
@@ -30,7 +31,10 @@ def main() -> None:
             "investor be invested in the S&P 500 for the NEXT period?"
         )
         lines.append("Output exactly one word: BUY, HOLD, or SELL.")
-        lines.append("Information: [PASTE HEADLINES / EARNINGS / MACRO HERE]")
+        lines.append(
+            "Information (include all prior periods up to this date): "
+            "[PASTE HEADLINES / EARNINGS / MACRO HERE]"
+        )
         lines.append("")
 
     with open(args.out, "w", encoding="utf-8") as f:

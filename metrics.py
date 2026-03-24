@@ -13,7 +13,7 @@ def max_drawdown(series: pd.Series) -> float:
 def performance_metrics(
     returns: pd.Series, risk_free_annual: float, frequency: str
 ) -> Dict[str, float]:
-    periods_per_year = 12 if frequency == "M" else 52
+    periods_per_year = {"D": 252, "W": 52, "M": 12}.get(frequency, 52)
     rf_period = (1 + risk_free_annual) ** (1 / periods_per_year) - 1
     excess = returns - rf_period
     cumulative = (1 + returns).prod() - 1
